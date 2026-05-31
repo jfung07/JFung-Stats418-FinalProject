@@ -7,4 +7,7 @@ numpy
 matplotlib
 playwright
 selenium
-urllib
+#urllib
+torch
+torchvision
+streamlit
