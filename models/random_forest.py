@@ -1,12 +1,14 @@
 # packages
 import os
 import pandas as pd
+import numpy as np
 import pickle
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, f1_score, accuracy_score
+from sklearn.metrics import f1_score, accuracy_score
+np.random.seed(256)
 
 # data
 base = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -16,7 +18,7 @@ val_path_csv = os.path.join(base, "data", "processed", "val.csv")
 df_val = pd.read_csv(val_path_csv)
 test_path_csv = os.path.join(base, "data", "processed", "test.csv")
 df_test = pd.read_csv(test_path_csv)
-x_vars = ['skin_tone', 'contrast_level', 'eye_cat', 'hair_cat']
+x_vars = ['contrast_level', 'eye_cat', 'hair_cat', 'skin_tone']
 
 # Hyperparameter GridSearch
 experiments = [
