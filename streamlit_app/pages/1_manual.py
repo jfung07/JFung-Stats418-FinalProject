@@ -1,11 +1,9 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
-import os
-import joblib
+import requests
 
 # data for sidebar
-filepath_csv = r"C:\Users\jfung\Documents\Stats418_FinalProject\data\processed\processed.csv"
+filepath_csv = r"data/processed/processed.csv"
 df = pd.read_csv(filepath_csv)
 
 
@@ -16,14 +14,8 @@ Enter your details below to get your color analysis prediction.
            """)
 
 # load random forest model
-@st.cache_resource
-def load_model():
-    model = joblib.load("models/rf.pkl")
-    return model
+RF_API_URL = "https://rf-api-980738607455.us-central1.run.app/predict"
 
-bundle = load_model()
-pipeline = bundle['pipeline']
-label_encoder = bundle['label_encoder']
 
 # Sidebar for inputs
 st.sidebar.header("Your features")
@@ -67,24 +59,25 @@ with col1:
 with col2:
     st.subheader("Color Season")
     if predict_button:
-        # Prep features
-        features = pd.DataFrame([{
-            "contrast_level": contrast,
-            "eye_cat": eye_color,
-            "hair_cat": hair_color,
-            "skin_tone": skin_tone
-        }])
-
-        # Make prediction
+                # Make prediction
         with st.spinner("Predicting..."):
-            encoded_prediction = pipeline.predict(features)[0]
-            prediction = label_encoder.inverse_transform([encoded_prediction])[0]
+            payload = {
+                "contrast_level": contrast,
+                "eye_cat": eye_color,
+                "hair_cat": hair_color,
+                "skin_tone": skin_tone
+            }
+            response = requests.post(RF_API_URL, json=payload)
+            if response.status_code == 200:
+                prediction = response.json().get("season")
+            else:
+                st.error(f"API Error {response.status_code}: {response.text}")
+                prediction = None
 
         # display prediction
         st.metric(
             label = "Color Analysis",
-            value = f"{prediction}",
-            delta = None
+            value = prediction
         )
     
 with st.expander("About the Model"):

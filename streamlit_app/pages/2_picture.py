@@ -1,6 +1,6 @@
 import os
 import sys
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = "/app"
 sys.path.append(ROOT)
 
 import streamlit as st
@@ -16,13 +16,14 @@ from models.cnn import SimpleCNN
 @st.cache_resource
 def load_model():
     model = SimpleCNN(num_classes = 12)
-    state = torch.load("models/cnn_weights.pth", map_location = "cpu", weights_only=False)
+    weights_path = os.path.join(ROOT, "models", "cnn_weights.pth")
+    state = torch.load(weights_path, map_location="cpu", weights_only=False)
     model.load_state_dict(state)
     model.eval()
     return model
 
 model = load_model()
-filepath_csv = r"C:\Users\jfung\Documents\Stats418_FinalProject\data\processed\processed.csv"
+filepath_csv = os.path.join(ROOT, "data", "processed", "processed.csv")
 df = pd.read_csv(filepath_csv)
 classes = df['season'].value_counts().index.to_list()
 
