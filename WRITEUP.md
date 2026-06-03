@@ -11,14 +11,12 @@ I split the data into training, validation, and testing sets in a 70/15/15 split
 
 ## Exploratory Data Analysis
 Exploratory data analysis focuses on the season color associations because the models do not address the best and worst colors.
-![Figure1](visualizations/seasons_dist) 
-Figure 1 shows the most common season in the data is cool winter, while the least common season is soft summer. 
-![Figure2](visualizations/season_colors_table.png)
-Figure 2 shows the two best and worst colors for each color palette.  Black is the worst color for every eason except for winter and cool summer, where the worst color for the four seasons is a yellow shade.  The best colors tend to be pastel colors, however, the winter palettes tend to favor darker colors and discourage yellows and oranges.  Additionally, white is not a compimentary color for seven out of the twelve seasons, clear spring, light summer, soft summer, warm spring, and the autumn seasons.  The most unusual palettes appear to be the winter seasons recommending darker colors and discouraging bright colors.  
+![Figure1](visualizations/seasons_dist) shows the most common season in the data is cool winter, while the least common season is soft summer. 
+![Figure2](visualizations/season_colors_table.png) shows the two best and worst colors for each color palette.  Black is the worst color for every eason except for winter and cool summer, where the worst color for the four seasons is a yellow shade.  The best colors tend to be pastel colors, however, the winter palettes tend to favor darker colors and discourage yellows and oranges.  Additionally, white is not a compimentary color for seven out of the twelve seasons, clear spring, light summer, soft summer, warm spring, and the autumn seasons.  The most unusual palettes appear to be the winter seasons recommending darker colors and discouraging bright colors.  
 
 
 ## Results
-The best random forest model has a 0.3618 F1-score and a 45.83% accuracy.  The model uses 100 decision trees, where each tree has a maximum 10 level depth.  Additionally, the trees require at least five samples to split and each leaf requires at least two samples.  The main factor is that the model balances class weights based on frequency to account for the data's class imbalance.  
+The best random forest model has a 0.3618 F1-score and a 45.83% accuracy.  The model uses 100 decision trees, where each tree has a maximum 10 level depth.  Additionally, the trees require at least five samples to split and each leaf requires at least two samples.  The main factor is that the model balances class weights based on frequency to account for the data's class imbalance.  Within the best model, ![Figure 3](visualizations/rf_varImp.png) shows the most influential variables are contrast and skin tone, while eye and hair collor are less influential.  The ordering is logical as eyes and hair are smaller body features compared to skin.  
 
 The convolutional neural network did not perform as well as the random forest even though the structure was more complex and had more training data.  The model has a 0.01 F1-score on the testing set, a 14.58% accuracy, and 2.729 loss.  
 

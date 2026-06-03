@@ -100,5 +100,21 @@ model_bundle = {
 with open("models/rf.pkl", "wb") as f:
   pickle.dump(model_bundle, f)
 
+rf_model = pipeline.named_steps["rf"]
+ohe = pipeline.named_steps["preprocess"].named_transformers_["cat"]
+feature_names = ohe.get_feature_names_out(X_train.columns)
+importances = rf_model.feature_importances_
+importance_df = pd.DataFrame({
+    "feature": feature_names,
+    "importance": importances
+}).sort_values("importance", ascending=False)
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 12))
+plt.barh(importance_df["feature"], importance_df["importance"])
+plt.gca().invert_yaxis()
+plt.title("Random Forest Feature Importance")
+plt.xlabel("Importance")
+plt.savefig("visualizations/rf_varImp.png", dpi=300, bbox_inches="tight")
 
 
