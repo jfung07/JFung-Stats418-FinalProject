@@ -18,5 +18,5 @@ Exploratory data analysis focuses on the season color associations because the m
 ## Results
 The best random forest model has a 0.3618 F1-score and a 45.83% accuracy.  The model uses 100 decision trees, where each tree has a maximum 10 level depth.  Additionally, the trees require at least five samples to split and each leaf requires at least two samples.  The main factor is that the model balances class weights based on frequency to account for the data's class imbalance.  Within the best model, ![Figure 3](visualizations/rf_varImp.png) shows the most influential variables are contrast and skin tone, while eye and hair collor are less influential.  The ordering is logical as eyes and hair are smaller body features compared to skin.  
 
-The convolutional neural network did not perform as well as the random forest even though the structure was more complex and had more training data.  The model has a 0.01 F1-score on the testing set, a 14.58% accuracy, and 2.729 loss.  
+The convolutional neural network did not perform as well as the random forest even though the structure was more complex with 12,974,688 parameters and had more training data.  The model has a 0.01 F1-score on the testing set, a 14.58% accuracy, and 2.729 loss.  
 

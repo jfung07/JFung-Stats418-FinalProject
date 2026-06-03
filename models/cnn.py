@@ -260,6 +260,9 @@ for epoch in range(NUM_EPOCHS):
 
 print("\nTraining complete!") 
 
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
+
 # save model to pkl
 torch.save(model.state_dict(), "models/cnn_weights.pth")
 
