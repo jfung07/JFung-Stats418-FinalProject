@@ -10,6 +10,7 @@ torch
 torchvision
 streamlit
 fastapi
+flask
 uvicorn
 joblib
 pillow

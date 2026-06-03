@@ -1,45 +1,39 @@
 import os
 import io
-from fastapi import FastAPI, UploadFile
+from flask import Flask, request, jsonify
 import torch
 from torchvision import transforms
 from PIL import Image
-from models.cnn import SimpleCNN
-from contextlib import asynccontextmanager
-
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(ROOT, "models")
+from models.cnn import SimpleCNN
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    cnn_path = os.path.join(MODELS_DIR, "cnn.pth")
+CNN_PATH = os.path.join(MODELS_DIR, "cnn.pth")
 
+app = Flask(__name__)
+
+# load model
+def load_cnn():
     try:
         cnn = SimpleCNN(num_classes=12)
-        state = torch.load(cnn_path, map_location="cpu")
+        state = torch.load(CNN_PATH, map_location="cpu")
         cnn.load_state_dict(state)
         cnn.eval()
-        app.state.cnn = cnn
-        print("CNN loaded")
+        return cnn
     except Exception as e:
-        app.state.cnn = None
-        print(f"CNN load error: {e}")
+        print(f"Error loading CNN: {e}")
+        return None
 
-    app.state.classes = [
-        "cool winter", "cool summer", "warm autumn", "deep autumn",
-        "deep winter", "light spring", "light summer", "clear winter",
-        "soft autumn", "clear spring", "warm spring", "soft summer"
-    ]
+cnn_model = load_cnn()
 
-    yield
-    print("CNN service shutting down")
+# need to remove pandas
+CLASSES = [
+    "cool winter", "cool summer", "warm autumn", "deep autumn",
+    "deep winter", "light spring", "light summer", "clear winter",
+    "soft autumn", "clear spring", "warm spring", "soft summer"
+]
 
-app = FastAPI(lifespan=lifespan)
-
-@app.get("/ready")
-def ready():
-    return {"ready": app.state.cnn is not None}
-
+# image transform
 transform = transforms.Compose([
     transforms.Resize((192, 256)),
     transforms.ToTensor(),
@@ -49,13 +43,22 @@ transform = transforms.Compose([
     )
 ])
 
-@app.post("/predict")
-async def predict_image(file: UploadFile):
-    img = Image.open(io.BytesIO(await file.read())).convert("RGB")
+@app.route("/ready", methods=["GET"])
+def ready():
+    return jsonify({"ready": cnn_model is not None})
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    if cnn_model is None:
+        return jsonify({"error": "Model not loaded"}), 500
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files["file"]
+    img = Image.open(io.BytesIO(file.read())).convert("RGB")
     tensor = transform(img).unsqueeze(0)
 
     with torch.no_grad():
-        outputs = app.state.cnn(tensor)
+        outputs = cnn_model(tensor)
         idx = torch.argmax(outputs, dim=1).item()
-
-    return {"season": app.state.classes[idx]}
+    return jsonify({"season": CLASSES[idx]})

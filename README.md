@@ -23,7 +23,8 @@ Figure 1 shows the project flow.  The project starts with data_scraper.py which 
 
 To run the streamlit app locally, run "streamlit run app/main.py".
 
-To explore the api using the Dockerfile, run "docker build -t rf-api -f api/rf_api/Dockerfile.rf .". Then run the container locally with "docker run -p 8000:8000 rf-api".
+To explore the api using the Dockerfile, run "docker build -t rf-api -f api/rf_api/Dockerfile.rf .". Then run the container locally with "docker run -p 8000:8000 rf-api".  The random forest model uses FastAPI, while the CNN implementation uses Flask.  However, the project does not implement the CNN API because the deployment was too large and expensive.  The line below builds, pushes, and deploys the API.  gcloud builds submit --tag us-central1-docker.pkg.dev/jfung-color-fastapi/fastapi-repo/cnn-api . && gcloud run deploy cnn-api --image us-central1-docker.pkg.dev/jfung-color-fastapi/fastapi-repo/cnn-api --platform managed --region us-central1 --allow-unauthenticated --port 8000
+
 
 
 
